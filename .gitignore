@@ -3,3 +3,18 @@ dist/
 .sites-runtime/
 *.tsbuildinfo
 test-results/
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local hosting configuration and workout exports
+.openai/
+backups/
+ascend-backup-*.json
+dyad-backup-*.json
