@@ -79,3 +79,9 @@ pnpm test:e2e
 The browser suite uses a disposable profile and does not touch your personal journal. It covers desktop and mobile layouts, invalid logging, draft reload, partial completion, previous-session prefills, charts and PRs, history, routine snapshots, export/restore, malformed backups, concurrent-tab protection, rest day, and horizontal overflow. Optional offline checks reload the production shell without a network and log/reload another set. Artifacts go to ignored `test-results/`.
 
 Source: `src/domain.ts` (routine, validation, progression, records), `src/storage.ts` (IndexedDB), `src/App.tsx` (UI), `src/style.css`, and `scripts/sw.mjs` (build-time offline cache). Font license files are in `public/fonts/`. The design and Dyad mark are original; no Breathedivinity assets are used.
+
+## Illustrated exercise library
+
+My routine → Edit day → Change opens a searchable exercise library grouped by muscle group. A replacement keeps the slot’s sets and rep range. Already-used exercises in that session are disabled. Add exercise uses the same picker; custom movements remain available. Existing drafts and history keep their original snapshots.
+
+Tap an exercise thumbnail in the training overview or logger to enlarge it and see the exact variation shown. Illustrations are © Simply Fitness and are included with permission confirmed by the project owner. They are optimized locally and included in the offline cache. Movements without an exact library entry retain a numbered tile rather than an unrelated illustration. No third-party requests are made while browsing the library.

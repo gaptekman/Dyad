@@ -19,6 +19,11 @@ try{
  assert.ok((await page.locator('.hero').boundingBox()).height<170,'Mobile banner must stay compact');
  await page.screenshot({path:'test-results/mobile-overview.png',fullPage:true});
  await page.setViewportSize({width:1440,height:1100});
+ await page.getByRole('button',{name:'View Squat illustration',exact:true}).click();
+ await page.getByRole('dialog').getByRole('heading',{name:'Squat',exact:true}).waitFor();
+ assert.ok(await page.locator('.illustration-dialog>img').evaluate(img=>img.complete&&img.naturalWidth>0),'Illustration must load');
+ await page.screenshot({path:'test-results/exercise-illustration.png',fullPage:true});
+ await page.getByRole('button',{name:'Close dialog',exact:true}).click();
  await page.getByRole('button',{name:'Start lower session',exact:true}).click();
  await page.getByRole('button',{name:'Log Squat set 1',exact:true}).click();
  await page.getByText('Enter weight (0–2000)',{exact:false}).waitFor();
@@ -42,6 +47,25 @@ try{
  await page.getByLabel('lower exercise 1 name',{exact:true}).fill('High bar squat');
  await page.getByRole('button',{name:'Save routine',exact:true}).click();await saved();
  await page.getByRole('heading',{name:'High bar squat',exact:true}).waitFor();
+ await page.getByRole('button',{name:'Edit day',exact:true}).click();
+ await page.getByRole('button',{name:'Change lower exercise 1',exact:true}).click();
+ await page.getByRole('button',{name:'Quads',exact:true}).click();
+ await page.getByRole('searchbox',{name:'Search exercises'}).fill('leg press');
+ assert.equal(await page.locator('.library-exercise').count(),1);
+ await page.setViewportSize({width:390,height:844});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Mobile picker must not overflow');
+ await page.screenshot({path:'test-results/mobile-exercise-picker.png',fullPage:true});
+ await page.getByRole('button',{name:'Choose Leg press',exact:true}).click();
+ assert.equal(await page.getByLabel('lower exercise 1 sets',{exact:true}).inputValue(),'4');
+ assert.equal(await page.getByLabel('lower exercise 1 min',{exact:true}).inputValue(),'4');
+ assert.equal(await page.getByLabel('lower exercise 1 max',{exact:true}).inputValue(),'6');
+ await page.getByRole('button',{name:'Change lower exercise 2',exact:true}).click();
+ await page.getByRole('searchbox',{name:'Search exercises'}).fill('leg press');
+ assert.equal(await page.getByRole('button',{name:'Choose Leg press, already in this session',exact:true}).isDisabled(),true);
+ await page.getByRole('button',{name:'Back to routine',exact:false}).click();
+ await page.getByRole('button',{name:'Save routine',exact:true}).click();await saved();
+ await page.getByRole('heading',{name:'Leg press',exact:true}).waitFor();
+ await page.setViewportSize({width:1440,height:1100});
  await nav('Train').click();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
  await page.getByRole('heading',{name:'Squat',exact:true}).waitFor(); // existing draft is unchanged
  await page.getByRole('button',{name:'Back to overview'}).click();
@@ -69,6 +93,9 @@ try{
   await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
   await page.getByLabel('Squat set 2 weight',{exact:true}).fill('95');await page.getByLabel('Squat set 2 reps',{exact:true}).fill('5');await page.getByLabel('Squat set 2 rir',{exact:true}).fill('1');await page.getByRole('button',{name:'Log Squat set 2',exact:true}).click();await saved();
   await page.reload();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();assert.equal(await page.getByLabel('Squat set 2 weight',{exact:true}).inputValue(),'95');await context.setOffline(false);
+  await context.setOffline(true);await page.getByRole('button',{name:'View Squat illustration',exact:true}).click();
+  assert.ok(await page.locator('.illustration-dialog>img').evaluate(img=>img.complete&&img.naturalWidth>0),'Illustration must work offline');
+  await page.getByRole('button',{name:'Close dialog',exact:true}).click();await context.setOffline(false);
  }
  // A failed write must remain visible and recover through Retry without losing the draft.
  if(process.env.CHECK_OFFLINE==='1'){

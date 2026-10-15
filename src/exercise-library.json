@@ -1,0 +1,354 @@
+[
+  {
+    "id": "row",
+    "name": "Barbell row",
+    "category": "Back",
+    "image": "/exercises/row.webp",
+    "source": "https://www.simplyfitness.com/pages/barbell-row",
+    "alt": "Barbell Row Illustration"
+  },
+  {
+    "id": "pull-up",
+    "name": "Pull-up",
+    "category": "Back",
+    "image": "/exercises/pull-up.webp",
+    "source": "https://www.simplyfitness.com/pages/pull-up",
+    "alt": "Pull-up illustration by Simply Fitness"
+  },
+  {
+    "id": "seated-row",
+    "name": "Seated cable row",
+    "category": "Back",
+    "image": "/exercises/seated-row.webp",
+    "source": "https://www.simplyfitness.com/pages/seated-cable-row",
+    "alt": "Seated cable row illustration by Simply Fitness"
+  },
+  {
+    "id": "one-arm-row",
+    "name": "Single-arm dumbbell row",
+    "category": "Back",
+    "image": "/exercises/one-arm-row.webp",
+    "source": "https://www.simplyfitness.com/pages/dumbbell-bent-over-row-single-arm",
+    "alt": "Dumbbell Bent Over Row (Single Arm) Illustration"
+  },
+  {
+    "id": "pulldown",
+    "name": "Wide-grip lat pulldown",
+    "category": "Back",
+    "image": "/exercises/pulldown.webp",
+    "source": "https://www.simplyfitness.com/pages/wide-grip-pulldown",
+    "alt": "Wide-grip lat pulldown illustration by Simply Fitness"
+  },
+  {
+    "id": "db-curl",
+    "name": "Alternating dumbbell curl",
+    "category": "Biceps",
+    "image": "/exercises/db-curl.webp",
+    "source": "https://www.simplyfitness.com/pages/alternating-dumbbell-curl",
+    "alt": "Alternating dumbbell curl illustration by Simply Fitness"
+  },
+  {
+    "id": "curl",
+    "name": "Barbell curl",
+    "category": "Biceps",
+    "image": "/exercises/curl.webp",
+    "source": "https://www.simplyfitness.com/pages/barbell-curl",
+    "alt": "Barbell Curl Illustration"
+  },
+  {
+    "id": "preacher-curl",
+    "name": "EZ-bar preacher curl",
+    "category": "Biceps",
+    "image": "/exercises/preacher-curl.webp",
+    "source": "https://www.simplyfitness.com/pages/ez-barbell-preacher-curl",
+    "alt": "EZ-bar preacher curl illustration by Simply Fitness"
+  },
+  {
+    "id": "hammer-curl",
+    "name": "Hammer curl",
+    "category": "Biceps",
+    "image": "/exercises/hammer-curl.webp",
+    "source": "https://www.simplyfitness.com/pages/hammer-curl",
+    "alt": "Hammer curl illustration by Simply Fitness"
+  },
+  {
+    "id": "seated-calf-raise",
+    "name": "Seated calf raise",
+    "category": "Calves",
+    "image": "/exercises/seated-calf-raise.webp",
+    "source": "https://www.simplyfitness.com/pages/seated-calf-raise",
+    "alt": "Seated calf raise illustration by Simply Fitness"
+  },
+  {
+    "id": "calf-raise",
+    "name": "Standing calf raise",
+    "category": "Calves",
+    "image": "/exercises/calf-raise.webp",
+    "source": "https://www.simplyfitness.com/pages/standing-calf-raise",
+    "alt": "Standing Calf Raise Illustration"
+  },
+  {
+    "id": "bench-press",
+    "name": "Barbell bench press",
+    "category": "Chest",
+    "image": "/exercises/bench-press.webp",
+    "source": "https://www.simplyfitness.com/pages/barbell-bench-press",
+    "alt": "Barbell Bench Press Illustration"
+  },
+  {
+    "id": "chest-press",
+    "name": "Chest press machine",
+    "category": "Chest",
+    "image": "/exercises/chest-press.webp",
+    "source": "https://www.simplyfitness.com/pages/chest-press-machine",
+    "alt": "Chest Press Machine Illustration"
+  },
+  {
+    "id": "db-bench",
+    "name": "Dumbbell bench press",
+    "category": "Chest",
+    "image": "/exercises/db-bench.webp",
+    "source": "https://www.simplyfitness.com/pages/dumbbell-bench-press",
+    "alt": "Dumbbell bench press illustration by Simply Fitness"
+  },
+  {
+    "id": "chest-fly",
+    "name": "Dumbbell chest fly",
+    "category": "Chest",
+    "image": "/exercises/chest-fly.webp",
+    "source": "https://www.simplyfitness.com/pages/dumbbell-fly",
+    "alt": "Dumbbell Fly Illustration"
+  },
+  {
+    "id": "incline-bench",
+    "name": "Incline barbell bench press",
+    "category": "Chest",
+    "image": "/exercises/incline-bench.webp",
+    "source": "https://www.simplyfitness.com/pages/incline-barbell-bench-press",
+    "alt": "Incline barbell bench press illustration by Simply Fitness"
+  },
+  {
+    "id": "incline-db",
+    "name": "Incline dumbbell press",
+    "category": "Chest",
+    "image": "/exercises/incline-db.webp",
+    "source": "https://www.simplyfitness.com/pages/incline-dumbbell-bench-press",
+    "alt": "Incline dumbbell press illustration by Simply Fitness"
+  },
+  {
+    "id": "pec-deck",
+    "name": "Pec deck",
+    "category": "Chest",
+    "image": "/exercises/pec-deck.webp",
+    "source": "https://www.simplyfitness.com/pages/pec-deck",
+    "alt": "Pec deck illustration by Simply Fitness"
+  },
+  {
+    "id": "push-up",
+    "name": "Push-up",
+    "category": "Chest",
+    "image": "/exercises/push-up.webp",
+    "source": "https://www.simplyfitness.com/pages/push-ups",
+    "alt": "Push Ups Illustration"
+  },
+  {
+    "id": "cable-crunch",
+    "name": "Cable crunch",
+    "category": "Core",
+    "image": "/exercises/cable-crunch.webp",
+    "source": "https://www.simplyfitness.com/pages/rope-ab-pulldown",
+    "alt": "Rope Ab Pulldown Illustration"
+  },
+  {
+    "id": "crunch",
+    "name": "Crunch",
+    "category": "Core",
+    "image": "/exercises/crunch.webp",
+    "source": "https://www.simplyfitness.com/pages/crunch",
+    "alt": "Crunch illustration by Simply Fitness"
+  },
+  {
+    "id": "hanging-leg-raise",
+    "name": "Hanging leg raise",
+    "category": "Core",
+    "image": "/exercises/hanging-leg-raise.webp",
+    "source": "https://www.simplyfitness.com/pages/hanging-leg-raise",
+    "alt": "Hanging leg raise illustration by Simply Fitness"
+  },
+  {
+    "id": "plank",
+    "name": "Plank",
+    "category": "Core",
+    "image": "/exercises/plank.webp",
+    "source": "https://www.simplyfitness.com/pages/plank",
+    "alt": "Plank illustration by Simply Fitness"
+  },
+  {
+    "id": "hip-thrust",
+    "name": "Barbell hip thrust",
+    "category": "Hamstrings & glutes",
+    "image": "/exercises/hip-thrust.webp",
+    "source": "https://www.simplyfitness.com/pages/barbell-hip-thrust",
+    "alt": "Barbell hip thrust illustration by Simply Fitness"
+  },
+  {
+    "id": "stiff-leg-deadlift",
+    "name": "Barbell stiff-leg deadlift",
+    "category": "Hamstrings & glutes",
+    "image": "/exercises/stiff-leg-deadlift.webp",
+    "source": "https://www.simplyfitness.com/pages/barbell-stiff-leg-deadlift",
+    "alt": "Barbell stiff-leg deadlift illustration by Simply Fitness"
+  },
+  {
+    "id": "glute-bridge",
+    "name": "Bodyweight glute bridge",
+    "category": "Hamstrings & glutes",
+    "image": "/exercises/glute-bridge.webp",
+    "source": "https://www.simplyfitness.com/pages/bodyweight-glute-bridge",
+    "alt": "Bodyweight glute bridge illustration by Simply Fitness"
+  },
+  {
+    "id": "hamstring-curl",
+    "name": "Lying leg curl",
+    "category": "Hamstrings & glutes",
+    "image": "/exercises/hamstring-curl.webp",
+    "source": "https://www.simplyfitness.com/pages/lying-leg-curl",
+    "alt": "Lying leg curl illustration by Simply Fitness"
+  },
+  {
+    "id": "hip-abduction",
+    "name": "Seated hip abduction machine",
+    "category": "Hamstrings & glutes",
+    "image": "/exercises/hip-abduction.webp",
+    "source": "https://www.simplyfitness.com/pages/seated-hip-abduction-machine",
+    "alt": "Seated Hip Abduction Machine Illustration"
+  },
+  {
+    "id": "bulgarian-split-squat",
+    "name": "Barbell Bulgarian split squat",
+    "category": "Quads",
+    "image": "/exercises/bulgarian-split-squat.webp",
+    "source": "https://www.simplyfitness.com/pages/barbell-bulgarian-split-squat",
+    "alt": "Barbell Bulgarian split squat illustration by Simply Fitness"
+  },
+  {
+    "id": "goblet-squat",
+    "name": "Dumbbell goblet squat",
+    "category": "Quads",
+    "image": "/exercises/goblet-squat.webp",
+    "source": "https://www.simplyfitness.com/pages/dumbbell-goblet-squat",
+    "alt": "Dumbbell goblet squat illustration by Simply Fitness"
+  },
+  {
+    "id": "front-squat",
+    "name": "Front squat",
+    "category": "Quads",
+    "image": "/exercises/front-squat.webp",
+    "source": "https://www.simplyfitness.com/pages/front-squat",
+    "alt": "Front squat illustration by Simply Fitness"
+  },
+  {
+    "id": "hack-squat",
+    "name": "Hack squat",
+    "category": "Quads",
+    "image": "/exercises/hack-squat.webp",
+    "source": "https://www.simplyfitness.com/pages/hack-squat",
+    "alt": "Hack squat illustration by Simply Fitness"
+  },
+  {
+    "id": "leg-extension",
+    "name": "Leg extension",
+    "category": "Quads",
+    "image": "/exercises/leg-extension.webp",
+    "source": "https://www.simplyfitness.com/pages/leg-extension",
+    "alt": "Leg extension illustration by Simply Fitness"
+  },
+  {
+    "id": "leg-press",
+    "name": "Leg press",
+    "category": "Quads",
+    "image": "/exercises/leg-press.webp",
+    "source": "https://www.simplyfitness.com/pages/leg-press",
+    "alt": "Leg press illustration by Simply Fitness"
+  },
+  {
+    "id": "squat",
+    "name": "Squat",
+    "category": "Quads",
+    "image": "/exercises/squat.webp",
+    "source": "https://www.simplyfitness.com/pages/squat",
+    "alt": "Squat Illustration"
+  },
+  {
+    "id": "front-raise",
+    "name": "Dumbbell front raise",
+    "category": "Shoulders",
+    "image": "/exercises/front-raise.webp",
+    "source": "https://www.simplyfitness.com/pages/dumbbell-front-raise",
+    "alt": "Dumbbell front raise illustration by Simply Fitness"
+  },
+  {
+    "id": "lateral-raise",
+    "name": "Dumbbell lateral raise",
+    "category": "Shoulders",
+    "image": "/exercises/lateral-raise.webp",
+    "source": "https://www.simplyfitness.com/pages/dumbbell-lateral-raise",
+    "alt": "Dumbbell Lateral Raise Illustration"
+  },
+  {
+    "id": "db-shoulder-press",
+    "name": "Dumbbell shoulder press",
+    "category": "Shoulders",
+    "image": "/exercises/db-shoulder-press.webp",
+    "source": "https://www.simplyfitness.com/pages/dumbbell-shoulder-press",
+    "alt": "Dumbbell shoulder press illustration by Simply Fitness"
+  },
+  {
+    "id": "rear-delt",
+    "name": "High cable rear delt fly",
+    "category": "Shoulders",
+    "image": "/exercises/rear-delt.webp",
+    "source": "https://www.simplyfitness.com/pages/high-cable-rear-delt-fly",
+    "alt": "High Cable Rear Delt Fly Illustration"
+  },
+  {
+    "id": "ohp",
+    "name": "Standing barbell shoulder press",
+    "category": "Shoulders",
+    "image": "/exercises/ohp.webp",
+    "source": "https://www.simplyfitness.com/pages/standing-barbell-shoulder-press",
+    "alt": "Standing barbell shoulder press illustration by Simply Fitness"
+  },
+  {
+    "id": "oh-triceps",
+    "name": "Dumbbell overhead triceps extension",
+    "category": "Triceps",
+    "image": "/exercises/oh-triceps.webp",
+    "source": "https://www.simplyfitness.com/pages/dumbbell-overhead-triceps-extension",
+    "alt": "Dumbbell overhead triceps extension illustration by Simply Fitness"
+  },
+  {
+    "id": "lying-triceps",
+    "name": "Lying triceps extension",
+    "category": "Triceps",
+    "image": "/exercises/lying-triceps.webp",
+    "source": "https://www.simplyfitness.com/pages/lying-triceps-extension",
+    "alt": "Lying triceps extension illustration by Simply Fitness"
+  },
+  {
+    "id": "pushdown",
+    "name": "Rope triceps pushdown",
+    "category": "Triceps",
+    "image": "/exercises/pushdown.webp",
+    "source": "https://www.simplyfitness.com/pages/cable-rope-pushdown",
+    "alt": "Rope triceps pushdown illustration by Simply Fitness"
+  },
+  {
+    "id": "triceps-pressdown",
+    "name": "Triceps pressdown",
+    "category": "Triceps",
+    "image": "/exercises/triceps-pressdown.webp",
+    "source": "https://www.simplyfitness.com/pages/triceps-pressdown",
+    "alt": "Triceps pressdown illustration by Simply Fitness"
+  }
+]
