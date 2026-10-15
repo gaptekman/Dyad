@@ -13,6 +13,12 @@ const mobileNav=name=>page.locator('.mobile-nav').getByRole('button',{name,exact
 try{
  await page.goto(base);await page.getByRole('heading',{name:'Show up. Build up.'}).waitFor();
  await page.screenshot({path:'test-results/desktop.png',fullPage:true});
+ await page.setViewportSize({width:390,height:844});
+ const start=await page.getByRole('button',{name:'Start lower session',exact:true}).boundingBox();
+ assert.ok(start&&start.y+start.height<755,'Start session must be visible above the phone navigation');
+ assert.ok((await page.locator('.hero').boundingBox()).height<170,'Mobile banner must stay compact');
+ await page.screenshot({path:'test-results/mobile-overview.png',fullPage:true});
+ await page.setViewportSize({width:1440,height:1100});
  await page.getByRole('button',{name:'Start lower session',exact:true}).click();
  await page.getByRole('button',{name:'Log Squat set 1',exact:true}).click();
  await page.getByText('Enter weight (0–2000)',{exact:false}).waitFor();

@@ -16,5 +16,4 @@ test-results/
 # Local hosting configuration and workout exports
 .openai/
 backups/
-ascend-backup-*.json
-dyad-backup-*.json
+*-backup-*.json
