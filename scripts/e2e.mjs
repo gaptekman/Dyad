@@ -1,0 +1,77 @@
+// Use PLAYWRIGHT_MODULE to point at a provided Playwright runtime if needed.
+import assert from 'node:assert/strict';
+import {mkdir} from 'node:fs/promises';
+const {chromium}=await import(process.env.PLAYWRIGHT_MODULE||'playwright');
+const browser=await chromium.launch({headless:true,...(process.env.BROWSER_CHANNEL?{channel:process.env.BROWSER_CHANNEL}:{})});
+const base=process.env.BASE_URL||'http://127.0.0.1:4173';
+await mkdir('test-results',{recursive:true});
+const context=await browser.newContext({viewport:{width:1440,height:1100}}),page=await context.newPage();
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+const saved=()=>page.getByRole('status').filter({hasText:'Saved on this device'}).waitFor();
+const nav=name=>page.locator('.sidebar').getByRole('button',{name,exact:true});
+const mobileNav=name=>page.locator('.mobile-nav').getByRole('button',{name,exact:true});
+try{
+ await page.goto(base);await page.getByRole('heading',{name:'Show up. Build up.'}).waitFor();
+ await page.screenshot({path:'test-results/desktop.png',fullPage:true});
+ await page.getByRole('button',{name:'Start lower session',exact:true}).click();
+ await page.getByRole('button',{name:'Log Squat set 1',exact:true}).click();
+ await page.getByText('Enter weight (0–2000)',{exact:false}).waitFor();
+ await page.getByLabel('Squat set 1 weight',{exact:true}).fill('100');
+ await page.getByLabel('Squat set 1 reps',{exact:true}).fill('6');
+ await page.getByLabel('Squat set 1 rir',{exact:true}).fill('2');
+ await page.getByRole('button',{name:'Log Squat set 1',exact:true}).click();await saved();
+ await page.getByRole('button',{name:'Close rest timer',exact:true}).click();
+ await page.reload();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
+ assert.equal(await page.getByLabel('Squat set 1 weight',{exact:true}).inputValue(),'100');
+ assert.equal(await page.getByRole('button',{name:'Unlog Squat set 1',exact:true}).getAttribute('aria-pressed'),'true');
+ await page.getByRole('button',{name:'Finish session',exact:true}).click();
+ await page.getByRole('dialog').getByRole('button',{name:'Finish session',exact:true}).click();await saved();
+ await nav('Progress').click();await page.getByText('100',{exact:true}).waitFor();
+ assert.equal(await page.getByRole('img',{name:/Heaviest set over 1 sessions/}).count(),1);
+ await nav('History').click();await page.locator('.history-summary').click();await page.getByText('100 kg × 6',{exact:false}).waitFor();
+ await nav('Train').click();await page.getByRole('button',{name:'Train again · lower session'}).click();
+ assert.equal(await page.getByLabel('Squat set 1 weight',{exact:true}).inputValue(),'100');
+ await page.getByRole('button',{name:'Back to overview'}).click();
+ await nav('My routine').click();await page.getByRole('button',{name:'Edit day',exact:true}).click();
+ await page.getByLabel('lower exercise 1 name',{exact:true}).fill('High bar squat');
+ await page.getByRole('button',{name:'Save routine',exact:true}).click();await saved();
+ await page.getByRole('heading',{name:'High bar squat',exact:true}).waitFor();
+ await nav('Train').click();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
+ await page.getByRole('heading',{name:'Squat',exact:true}).waitFor(); // existing draft is unchanged
+ await page.getByRole('button',{name:'Back to overview'}).click();
+ await nav('Settings & data').click();
+ const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Export backup',exact:true}).click();const download=await downloadPromise;await download.saveAs('test-results/backup.json');
+ await page.locator('input[type=file]').setInputFiles({name:'bad.json',mimeType:'application/json',buffer:Buffer.from('{"version":8}')});
+ await page.getByText('This file is not a valid Dyad v1 backup.',{exact:false}).waitFor();
+ await page.locator('input[type=file]').setInputFiles('test-results/backup.json');
+ await page.getByRole('dialog').getByRole('button',{name:'Restore backup',exact:true}).click();await saved();
+ const second=await context.newPage();await second.goto(base);await second.getByRole('heading',{name:'One journal. One tab.'}).waitFor();await second.close();
+ await page.setViewportSize({width:390,height:844});await mobileNav('Train').click();
+ await page.getByRole('button',{name:/DAY 07 Rest/}).click();await page.getByRole('heading',{name:/Growth happens/}).waitFor();
+ await page.getByRole('button',{name:'Back to day 01'}).click();
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Mobile must not overflow');
+ await page.screenshot({path:'test-results/mobile.png',fullPage:true});
+ await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Logger must not overflow');
+ await page.screenshot({path:'test-results/mobile-logging.png',fullPage:true});
+ await page.getByRole('button',{name:'Back to overview'}).click();
+ // Production offline shell must cache, control the page, and survive an offline reload.
+ if(process.env.CHECK_OFFLINE==='1'){
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload();await page.getByRole('heading',{name:'Show up. Build up.'}).waitFor();
+  await context.setOffline(true);await page.reload();await page.getByRole('button',{name:'Resume lower session',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
+  await page.getByLabel('Squat set 2 weight',{exact:true}).fill('95');await page.getByLabel('Squat set 2 reps',{exact:true}).fill('5');await page.getByLabel('Squat set 2 rir',{exact:true}).fill('1');await page.getByRole('button',{name:'Log Squat set 2',exact:true}).click();await saved();
+  await page.reload();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();assert.equal(await page.getByLabel('Squat set 2 weight',{exact:true}).inputValue(),'95');await context.setOffline(false);
+ }
+ // A failed write must remain visible and recover through Retry without losing the draft.
+ if(process.env.CHECK_OFFLINE==='1'){
+  await page.evaluate(()=>{const original=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(...args){IDBObjectStore.prototype.put=original;throw new DOMException('Test quota failure','QuotaExceededError');};});
+  await page.getByLabel('Squat set 3 weight',{exact:true}).fill('90');
+  await page.getByRole('alert').getByText('Changes are only in memory.',{exact:false}).waitFor();
+  await page.getByRole('button',{name:'Retry',exact:true}).click();await saved();
+ }
+ await page.setViewportSize({width:320,height:740});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Small phone logger must not overflow');
+ assert.deepEqual(errors,[],'No browser errors');console.log('PASS: desktop/mobile, logging validation, draft reload, completion, PR/chart/history, previous values, routine snapshots, export/restore, invalid backup, tab lock, rest day, no overflow'+(process.env.CHECK_OFFLINE==='1'?', service worker offline reload + offline logging, failed-write recovery':''));
+}finally{await browser.close();}
