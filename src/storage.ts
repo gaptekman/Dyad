@@ -1,5 +1,5 @@
 import { openDB, type IDBPDatabase } from 'idb';
-import { initialState, validateState, type State } from './domain';
+import { initialState, validateState, trainingCycle, type State } from './domain';
 let dbPromise:Promise<IDBPDatabase>|undefined;
 function db(){return dbPromise??=openDB('dyad-training',1,{upgrade(db){db.createObjectStore('state');},blocking(){location.reload();}});}
 export async function load():Promise<State>{
@@ -13,6 +13,7 @@ export async function load():Promise<State>{
   await tx.store.put(state,'main');
   await tx.store.put(true,'dyad-rest-3m-v1');
  }
+ if(!state.trainingCycle){state.trainingCycle=trainingCycle(state);await tx.store.put(state,'main');}
  await tx.done;
  return state;
 }

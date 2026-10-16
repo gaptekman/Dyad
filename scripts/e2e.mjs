@@ -9,17 +9,19 @@ const context=await browser.newContext({viewport:{width:1440,height:1100}}),page
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const saved=()=>page.getByRole('status').filter({hasText:'Saved on this device'}).waitFor();
 const nav=name=>page.locator('.sidebar').getByRole('button',{name,exact:true});
+const showLower=async()=>{await page.getByRole('button',{name:'Lower body',exact:true}).click();};
 const mobileNav=name=>page.locator('.mobile-nav').getByRole('button',{name,exact:true});
 try{
- await page.goto(base);await page.getByRole('heading',{name:'Show up. Build up.'}).waitFor();
+ await page.goto(base);await page.getByRole('heading',{name:'Your workout'}).waitFor();
  await page.screenshot({path:'test-results/desktop.png',fullPage:true});
  await page.setViewportSize({width:390,height:844});
- const start=await page.getByRole('button',{name:'Start lower session',exact:true}).boundingBox();
+ assert.equal(await page.locator('.segment button').first().innerText(),'Upper body');
+ const start=await page.getByRole('button',{name:'Start next session',exact:true}).boundingBox();
  assert.ok(start&&start.y+start.height<755,'Start session must be visible above the phone navigation');
- assert.ok((await page.locator('.hero').boundingBox()).height<170,'Mobile banner must stay compact');
+ assert.equal(await page.locator('.hero').isVisible(),false,'Training should focus on the session rather than the banner');
  await page.screenshot({path:'test-results/mobile-overview.png',fullPage:true});
  await page.setViewportSize({width:1440,height:1100});
- await page.getByRole('button',{name:'View Squat illustration',exact:true}).click();
+ await showLower();await page.getByRole('button',{name:'View Squat illustration',exact:true}).click();
  await page.getByRole('dialog').getByRole('heading',{name:'Squat',exact:true}).waitFor();
  assert.ok(await page.locator('.illustration-dialog>img').evaluate(img=>img.complete&&img.naturalWidth>0),'Illustration must load');
  await page.screenshot({path:'test-results/exercise-illustration.png',fullPage:true});
@@ -29,10 +31,11 @@ try{
  await page.getByText('Enter weight (0–2000)',{exact:false}).waitFor();
  await page.getByLabel('Squat set 1 weight',{exact:true}).fill('100');
  await page.getByLabel('Squat set 1 reps',{exact:true}).fill('6');
+ await page.locator('.quick-logger').first().getByRole('button',{name:'RIR optional',exact:true}).click();
  await page.getByLabel('Squat set 1 rir',{exact:true}).fill('2');
  await page.getByRole('button',{name:'Log Squat set 1',exact:true}).click();await saved();
- await page.getByRole('button',{name:'Close rest timer',exact:true}).click();
- await page.reload();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
+ assert.equal(await page.locator('.timer-popover').count(),0,'Logging must not cover the inputs with a timer');
+ await page.reload();await showLower();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
  assert.equal(await page.getByLabel('Squat set 1 weight',{exact:true}).inputValue(),'100');
  assert.equal(await page.getByRole('button',{name:'Unlog Squat set 1',exact:true}).getAttribute('aria-pressed'),'true');
  await page.getByRole('button',{name:'Finish session',exact:true}).click();
@@ -40,7 +43,7 @@ try{
  await nav('Progress').click();await page.getByText('100',{exact:true}).waitFor();
  assert.equal(await page.getByRole('img',{name:/Heaviest set over 1 sessions/}).count(),1);
  await nav('History').click();await page.locator('.history-summary').click();await page.getByText('100 kg × 6',{exact:false}).waitFor();
- await nav('Train').click();await page.getByRole('button',{name:'Train again · lower session'}).click();
+ await nav('Train').click();await showLower();await page.getByRole('button',{name:'Train again · lower session'}).click();
  assert.equal(await page.getByLabel('Squat set 1 weight',{exact:true}).inputValue(),'100');
  await page.getByRole('button',{name:'Back to overview'}).click();
  await nav('My routine').click();await page.getByRole('button',{name:'Edit day',exact:true}).click();
@@ -66,7 +69,7 @@ try{
  await page.getByRole('button',{name:'Save routine',exact:true}).click();await saved();
  await page.getByRole('heading',{name:'Leg press',exact:true}).waitFor();
  await page.setViewportSize({width:1440,height:1100});
- await nav('Train').click();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
+ await nav('Train').click();await showLower();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
  await page.getByRole('heading',{name:'Squat',exact:true}).waitFor(); // existing draft is unchanged
  await page.getByRole('button',{name:'Back to overview'}).click();
  await nav('Settings & data').click();
@@ -77,22 +80,22 @@ try{
  await page.getByRole('dialog').getByRole('button',{name:'Restore backup',exact:true}).click();await saved();
  const second=await context.newPage();await second.goto(base);await second.getByRole('heading',{name:'One journal. One tab.'}).waitFor();await second.close();
  await page.setViewportSize({width:390,height:844});await mobileNav('Train').click();
- await page.getByRole('button',{name:/DAY 07 Rest/}).click();await page.getByRole('heading',{name:/Growth happens/}).waitFor();
- await page.getByRole('button',{name:'Back to day 01'}).click();
+ await page.getByRole('button',{name:/ANYTIME Rest/}).click();await page.getByRole('heading',{name:/Growth happens/}).waitFor();
+ await page.getByRole('button',{name:'Back to A1',exact:true}).click();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Mobile must not overflow');
  await page.screenshot({path:'test-results/mobile.png',fullPage:true});
- await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
+ await showLower();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Logger must not overflow');
  await page.screenshot({path:'test-results/mobile-logging.png',fullPage:true});
  await page.getByRole('button',{name:'Back to overview'}).click();
  // Production offline shell must cache, control the page, and survive an offline reload.
  if(process.env.CHECK_OFFLINE==='1'){
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
-  await page.reload();await page.getByRole('heading',{name:'Show up. Build up.'}).waitFor();
-  await context.setOffline(true);await page.reload();await page.getByRole('button',{name:'Resume lower session',exact:true}).waitFor();
-  await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
-  await page.getByLabel('Squat set 2 weight',{exact:true}).fill('95');await page.getByLabel('Squat set 2 reps',{exact:true}).fill('5');await page.getByLabel('Squat set 2 rir',{exact:true}).fill('1');await page.getByRole('button',{name:'Log Squat set 2',exact:true}).click();await saved();
-  await page.reload();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();assert.equal(await page.getByLabel('Squat set 2 weight',{exact:true}).inputValue(),'95');await context.setOffline(false);
+  await page.reload();await page.getByRole('heading',{name:'Your workout'}).waitFor();
+  await context.setOffline(true);await page.reload();await showLower();await page.getByRole('button',{name:'Resume lower session',exact:true}).waitFor();
+  await showLower();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();
+  await page.getByLabel('Squat set 2 weight',{exact:true}).fill('95');await page.getByLabel('Squat set 2 reps',{exact:true}).fill('5');await page.getByRole('button',{name:'Log Squat set 2',exact:true}).click();await saved();
+  await page.reload();await showLower();await page.getByRole('button',{name:'Resume lower session',exact:true}).click();assert.equal(await page.getByLabel('Squat set 2 weight',{exact:true}).inputValue(),'95');await context.setOffline(false);
   await context.setOffline(true);await page.getByRole('button',{name:'View Squat illustration',exact:true}).click();
   assert.ok(await page.locator('.illustration-dialog>img').evaluate(img=>img.complete&&img.naturalWidth>0),'Illustration must work offline');
   await page.getByRole('button',{name:'Close dialog',exact:true}).click();await context.setOffline(false);

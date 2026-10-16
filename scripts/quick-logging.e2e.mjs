@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+const {chromium}=await import(process.env.PLAYWRIGHT_MODULE||'playwright');
+const browser=await chromium.launch({headless:true,...(process.env.BROWSER_CHANNEL?{channel:process.env.BROWSER_CHANNEL}:{})});
+const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+try{
+ await page.goto(process.env.BASE_URL||'http://127.0.0.1:4173');
+ await page.getByRole('button',{name:'Start upper session',exact:true}).waitFor();
+ assert.equal(await page.locator('.segment button').first().innerText(),'Upper body');
+ await page.getByRole('button',{name:'Start upper session',exact:true}).click();
+ const weight=page.getByLabel('Incline bench press set 1 weight',{exact:true}),reps=page.getByLabel('Incline bench press set 1 reps',{exact:true});
+ await weight.fill('42,5');assert.equal(await weight.inputValue(),'42.5');await weight.press('Enter');assert.ok(await reps.evaluate(e=>document.activeElement===e));
+ await reps.fill('8');await reps.press('Enter');await page.getByRole('button',{name:'Unlog Incline bench press set 1',exact:true}).waitFor();
+ assert.equal(await page.locator('.timer-popover').count(),0);assert.match(await page.locator('.timer-trigger').innerText(),/0[23]:/);
+ assert.equal(await page.getByLabel('Incline bench press set 2 weight',{exact:true}).inputValue(),'42.5');
+ assert.equal(await page.getByLabel('Incline bench press set 2 reps',{exact:true}).inputValue(),'8');
+ assert.equal(await page.getByRole('button',{name:'Log Incline bench press set 2',exact:true}).getAttribute('aria-pressed'),'false');
+ await page.getByLabel('Incline bench press set 2 weight',{exact:true}).focus();
+ assert.ok(await page.getByLabel('Incline bench press set 2 weight',{exact:true}).evaluate(e=>e.selectionStart===0&&e.selectionEnd===e.value.length),'Tapping a field selects its value');
+ await page.getByLabel('Incline bench press set 3 weight',{exact:true}).fill('35');await page.getByLabel('Incline bench press set 3 reps',{exact:true}).fill('6');
+ await page.getByRole('button',{name:'Log Incline bench press set 2',exact:true}).click();
+ assert.equal(await page.getByLabel('Incline bench press set 3 weight',{exact:true}).inputValue(),'35');assert.equal(await page.getByLabel('Incline bench press set 3 reps',{exact:true}).inputValue(),'6');
+ await page.screenshot({path:'test-results/quick-logging-mobile.png',fullPage:true});
+ await page.getByRole('button',{name:'Finish',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'Finish session',exact:true}).click();
+ await page.getByRole('button',{name:'Start lower session',exact:true}).waitFor();
+ await page.locator('.mobile-nav').getByRole('button',{name:'Routine',exact:true}).click();assert.equal(await page.locator('.routine-grid h3').first().textContent(),'upper body');
+ await page.getByRole('button',{name:'Edit day',exact:true}).click();assert.equal(await page.locator('.routine-editor section h3').first().textContent(),'upper body');
+ await page.setViewportSize({width:320,height:740});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ assert.deepEqual(errors,[]);console.log('PASS: Upper first, numeric keyboard flow, decimal commas, optional RIR, carry-forward without overwrites, quiet rest timer, selected input values, next-session order, editor order, and small phone layout');
+}finally{await browser.close();}

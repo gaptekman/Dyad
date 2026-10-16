@@ -35,8 +35,8 @@ pnpm preview
 ## Training flow
 
 1. Pick A1, P1, A2, P2, A3, P3, or Rest. The cycle is deliberately independent of weekdays so missed days do not move your program.
-2. Pick lower or upper. Sessions can be done in either order and can remain as independent drafts.
-3. Enter weight, reps, and RIR, then tap the check. RIR is the number of additional reps you could have performed. Checking a set starts the rest timer. The timer uses an absolute end time and survives reloads; alerts are in-app/vibration only while open.
+2. Upper is selected first. Pick upper or lower. Sessions can be done in either order and can remain as independent drafts.
+3. Enter weight and reps, then tap the check. RIR is optional under the RIR control. RIR is the number of additional reps you could have performed. Checking a set starts the rest timer quietly in the header and copies weight/reps into the next blank set, without overwriting entered values. The timer uses an absolute end time and survives reloads; alerts are in-app/vibration only while open.
 4. Previous values come from the latest completed session for that exercise in the same unit. Those fields prefill for speed but are unchecked until you log them. Editing a logged field unchecks that set.
 5. Finish the session. Partial sessions require an explicit confirmation, and unchecked sets do not contribute to charts, records, or volume. At least one logged set is required.
 6. History contains completed sessions and resumable drafts. Progress charts show the heaviest logged set per completed session for the selected exercise and unit. Personal records use heaviest load, then highest reps at that load. Empty states contain no fabricated data.
@@ -85,3 +85,15 @@ Source: `src/domain.ts` (routine, validation, progression, records), `src/storag
 My routine → Edit day → Change opens a searchable exercise library grouped by muscle group. A replacement keeps the slot’s sets and rep range. Already-used exercises in that session are disabled. Add exercise uses the same picker; custom movements remain available. Existing drafts and history keep their original snapshots.
 
 Tap an exercise thumbnail in the training overview or logger to enlarge it and see the exact variation shown. Illustrations are © Simply Fitness and are included with permission confirmed by the project owner. They are optimized locally and included in the offline cache. Movements without an exact library entry retain a numbered tile rather than an unrelated illustration. No third-party requests are made while browsing the library.
+
+## Quick logging
+
+Upper is the first/default session in the overview, routine, and editor. Completing Upper selects Lower next. Enter weight and reps using the numeric keyboard; tapping a field selects its current value. Enter on weight moves to reps, and Enter on reps logs the set. Decimal commas are accepted for weights. Logging fills the next blank set without checking it or guessing RIR. Previously entered next-set values stay intact. RIR and previous-session detail are available on demand. Unknown RIR never triggers a weight-increase suggestion.
+
+## Rolling training cycle
+
+The Next session card follows A1 → P1 → A2 → P2 → A3 → P3 → repeat. Finish both Upper and Lower to advance; either order works. Rest today, calendar changes and browsing other days leave your place unchanged. Start next session resumes an unfinished draft where available. Explicitly finishing a partial session counts that body section as complete. Repeating a finished section or training another day does not skip your current day.
+
+Set my place selects your next day and section without deleting workouts or drafts. Lower next marks Upper as already completed for that position. The cycle is saved locally and included in backups. Older backups are supported and infer a starting position from completed sessions. Deleting history does not rewind an established cycle; use Set my place to correct it.
+
+Run `node scripts/training-cycle.e2e.mjs` against the production preview for mobile completion, rest, draft resume, manual positioning, wraparound and offline reload checks (uses installed Edge).
