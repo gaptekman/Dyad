@@ -2,6 +2,8 @@
 
 A mobile-first, installable training journal for your six-day anterior/posterior split. React + TypeScript + Vite, with IndexedDB persistence and an offline service worker. No backend, credentials, subscriptions, or cloud synchronization.
 
+Android and iOS Capacitor projects are included. See [NATIVE.md](NATIVE.md) for setup, running on a phone, backup transfer and current verification limits. Start with `pnpm native:sync android` or `pnpm native:sync ios`, then open the corresponding native IDE.
+
 ## Open and install on your phone
 
 

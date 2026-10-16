@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Dyad</string>
+    <string name="title_activity_main">Dyad</string>
+    <string name="package_name">io.github.gaptekman.dyad</string>
+    <string name="custom_url_scheme">io.github.gaptekman.dyad</string>
+</resources>

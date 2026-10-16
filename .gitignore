@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-native/
 .sites-runtime/
 *.tsbuildinfo
 test-results/
@@ -12,6 +13,16 @@ test-results/
 *.key
 *.p12
 *.pfx
+*.jks
+*.keystore
+key.properties
+keystore.properties
+local.properties
+*.mobileprovision
+*.provisionprofile
+*.ipa
+*.apk
+*.aab
 
 # Local hosting configuration and workout exports
 .openai/
