@@ -90,6 +90,8 @@ Tap an exercise thumbnail in the training overview or logger to enlarge it and s
 
 ## Quick logging
 
+The workout screen has its own **Workout weight unit** selector. Settings can update unfinished workouts as well as the default for new ones. With entered weights, choose **Convert weights** to preserve the load (rounded to 2 decimal places), or **Keep numbers — already in …** to correct a mistaken unit label. Logged checks, reps and RIR stay intact. Completed sessions keep their original units. Older drafts whose units differ from the default show **Use my default**. Run `node scripts/weight-units.e2e.mjs` for the switching/restore regression checks.
+
 Upper is the first/default session in the overview, routine, and editor. Completing Upper selects Lower next. Enter weight and reps using the numeric keyboard; tapping a field selects its current value. Enter on weight moves to reps, and Enter on reps logs the set. Decimal commas are accepted for weights. Logging fills the next blank set without checking it or guessing RIR. Previously entered next-set values stay intact. RIR and previous-session detail are available on demand. Unknown RIR never triggers a weight-increase suggestion.
 
 ## Rolling training cycle
