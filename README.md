@@ -94,8 +94,11 @@ Upper is the first/default session in the overview, routine, and editor. Complet
 
 ## Rolling training cycle
 
+Choose **Full workout** alongside Upper body and Lower body to combine both sections in one session, Upper first. **Start full workout** on the Next session card is a shortcut. Existing split drafts for that day are combined with their entered values and checked sets intact; mixed-unit or duplicate drafts require resolving in History first. A combined workout is one history entry. Completing it counts each section with logged sets toward the cycle, so finishing with only Upper logged leaves Lower next. Backups retain section identity, including when an exercise appears in both halves. Run `node scripts/full-workout.e2e.mjs` for the combined-workout mobile/offline checks.
+
 The Next session card follows A1 → P1 → A2 → P2 → A3 → P3 → repeat. Finish both Upper and Lower to advance; either order works. Rest today, calendar changes and browsing other days leave your place unchanged. Start next session resumes an unfinished draft where available. Explicitly finishing a partial session counts that body section as complete. Repeating a finished section or training another day does not skip your current day.
 
 Set my place selects your next day and section without deleting workouts or drafts. Lower next marks Upper as already completed for that position. The cycle is saved locally and included in backups. Older backups are supported and infer a starting position from completed sessions. Deleting history does not rewind an established cycle; use Set my place to correct it.
 
 Run `node scripts/training-cycle.e2e.mjs` against the production preview for mobile completion, rest, draft resume, manual positioning, wraparound and offline reload checks (uses installed Edge).
+

@@ -1,9 +1,10 @@
 export type Exercise = { id: string; name: string; sets: number; min: number; max: number; note?: string };
 export type Day = { id: string; name: string; focus: string; lower: Exercise[]; upper: Exercise[] };
 export type SetLog = { weight: string; reps: string; rir: string; done: boolean };
-export type Entry = { exercise: Exercise; sets: SetLog[] };
-export type Session = { id: string; dayId: string; dayName: string; part: 'upper'|'lower'; startedAt: string; completedAt?: string; entries: Entry[]; unit: 'kg'|'lb' };
-export type TrainingCycle = { dayId: string; completedParts: Session['part'][] };
+export type BodyPart = 'upper'|'lower';
+export type Entry = { part?: BodyPart; exercise: Exercise; sets: SetLog[] };
+export type Session = { id: string; dayId: string; dayName: string; part: BodyPart|'full'; startedAt: string; completedAt?: string; entries: Entry[]; unit: 'kg'|'lb' };
+export type TrainingCycle = { dayId: string; completedParts: BodyPart[] };
 export const cycleDays = ['A1','P1','A2','P2','A3','P3'] as const;
 export type State = { trainingCycle?: TrainingCycle; version: 1; routine: Day[]; sessions: Session[]; unit: 'kg'|'lb'; timerEnd: number | null; restSeconds: number };
 const ex = (id:string,name:string,sets:number,min:number,max=min,note?:string):Exercise => ({id,name,sets,min,max,note});
@@ -32,10 +33,29 @@ export function logAndPrefillNext(entry:Entry,index:number):Entry {
 export const volume = (s:Session) => s.entries.reduce((n,e)=>n+e.sets.filter(x=>x.done&&validSet(x)).reduce((a,x)=>a+(+x.weight)*(+x.reps),0),0);
 export const doneCount = (s:Session) => s.entries.flatMap(e=>e.sets).filter(x=>x.done).length;
 export const setCount = (s:Session) => s.entries.reduce((n,e)=>n+e.sets.length,0);
-export function previous(sessions:Session[],id:string,unit:State['unit'],exclude?:string) { return sessions.filter(s=>s.completedAt&&s.unit===unit&&s.id!==exclude&&s.entries.some(e=>e.exercise.id===id&&e.sets.some(x=>x.done))).sort((a,b)=>b.completedAt!.localeCompare(a.completedAt!))[0]?.entries.find(e=>e.exercise.id===id); }
-export function startSession(state:State,day:Day,part:Session['part']):Session {
- return {id:crypto.randomUUID(),dayId:day.id,dayName:day.name,part,startedAt:new Date().toISOString(),unit:state.unit,entries:day[part].map(exercise=>({exercise:structuredClone(exercise),sets:Array.from({length:exercise.sets},(_,i)=>{const p=previous(state.sessions,exercise.id,state.unit)?.sets[i];return {weight:p?.done?p.weight:'',reps:p?.done?p.reps:'',rir:'',done:false};})}))};
+export const partLabel = (part:Session['part']) => part==='full'?'Full workout':part==='upper'?'Upper body':'Lower body';
+export const sessionExercises = (day:Day,part:Session['part']) => part==='full'?[...day.upper,...day.lower]:day[part];
+export function previous(sessions:Session[],id:string,unit:State['unit'],exclude?:string,section?:BodyPart) {
+ return sessions.filter(s=>s.completedAt&&s.unit===unit&&s.id!==exclude).sort((a,b)=>b.completedAt!.localeCompare(a.completedAt!)).flatMap(s=>s.entries.filter(e=>e.exercise.id===id&&e.sets.some(x=>x.done)&&(!section||(e.part??s.part)===section)))[0];
 }
+export function startSession(state:State,day:Day,part:Session['part']):Session {
+ const parts:BodyPart[]=part==='full'?['upper','lower']:[part];
+ return {id:crypto.randomUUID(),dayId:day.id,dayName:day.name,part,startedAt:new Date().toISOString(),unit:state.unit,entries:parts.flatMap(section=>day[section].map(exercise=>({part:section,exercise:structuredClone(exercise),sets:Array.from({length:exercise.sets},(_,i)=>{const p=previous(state.sessions,exercise.id,state.unit,undefined,section)?.sets[i];return {weight:p?.done?p.weight:'',reps:p?.done?p.reps:'',rir:'',done:false};})})))};
+}
+export function prepareSession(state:State,day:Day,part:Session['part']):{state:State;session:Session} {
+ const drafts=state.sessions.filter(s=>s.dayId===day.id&&!s.completedAt);
+ const old=drafts.find(s=>s.part==='full')??drafts.find(s=>s.part===part);
+ if(old)return {state,session:old};
+ if(part!=='full'){const session=startSession(state,day,part);return {state:{...state,sessions:[...state.sessions,session]},session};}
+ if(drafts.length>2||new Set(drafts.map(s=>s.part)).size!==drafts.length)throw new Error('There are multiple drafts for this day. Resume or discard extra drafts in History before combining.');
+ if(new Set(drafts.map(s=>s.unit)).size>1)throw new Error('These drafts use different weight units. Finish them separately to keep their weights accurate.');
+ const session=startSession({...state,unit:drafts[0]?.unit??state.unit},day,'full');
+ session.startedAt=drafts.map(s=>s.startedAt).sort()[0]??session.startedAt;
+ session.entries=(['upper','lower'] as const).flatMap(section=>{const draft=drafts.find(s=>s.part===section);return draft?draft.entries.map(e=>({...structuredClone(e),part:section})):session.entries.filter(e=>e.part===section);});
+ const merged=new Set(drafts.map(s=>s.id));
+ return {state:{...state,sessions:[...state.sessions.filter(s=>!merged.has(s.id)),session]},session};
+}
+
 export function suggestion(e:Entry,unit:State['unit']) {
  const done=e.sets.filter(s=>s.done&&validSet(s));
  if(done.length!==e.sets.length||!done.length)return 'Log every set to get a next-session suggestion.';
@@ -62,14 +82,15 @@ export function validateState(value:unknown):State {
  if(s.routine.some(d=>d.id!=='REST'&&(!d.lower.length||!d.upper.length)))return fail();
  const date=(x:unknown)=>typeof x==='string'&&Number.isFinite(Date.parse(x));
  if(new Set(s.sessions.map(x=>x.id)).size!==s.sessions.length)return fail();
- for(const x of s.sessions){if(!strings(x.id,x.dayId,x.dayName)||!s.routine.some(d=>d.id===x.dayId)||!['lower','upper'].includes(x.part)||!['kg','lb'].includes(x.unit)||!date(x.startedAt)||(x.completedAt!==undefined&&!date(x.completedAt))||!Array.isArray(x.entries)||!x.entries.length||x.entries.length>30)return fail();for(const e of x.entries){if(!exercise(e.exercise)||!Array.isArray(e.sets)||!e.sets.length||e.sets.length>20)return fail();for(const st of e.sets)if(!st||typeof st.weight!=='string'||typeof st.reps!=='string'||typeof st.rir!=='string'||typeof st.done!=='boolean'||(st.done&&!validSet(st)))return fail();}if(x.completedAt&&!doneCount(x))return fail();}
+ for(const x of s.sessions){if(!strings(x.id,x.dayId,x.dayName)||!s.routine.some(d=>d.id===x.dayId)||!['lower','upper','full'].includes(x.part)||!['kg','lb'].includes(x.unit)||!date(x.startedAt)||(x.completedAt!==undefined&&!date(x.completedAt))||!Array.isArray(x.entries)||!x.entries.length||x.entries.length>(x.part==='full'?60:30))return fail();for(const e of x.entries){if((e.part!==undefined&&!['upper','lower'].includes(e.part))||(x.part==='full'&&e.part===undefined)||!exercise(e.exercise)||!Array.isArray(e.sets)||!e.sets.length||e.sets.length>20)return fail();for(const st of e.sets)if(!st||typeof st.weight!=='string'||typeof st.reps!=='string'||typeof st.rir!=='string'||typeof st.done!=='boolean'||(st.done&&!validSet(st)))return fail();}if(x.part==='full'&&!(['upper','lower'] as const).every(p=>x.entries.some(e=>e.part===p)))return fail();if(x.completedAt&&!doneCount(x))return fail();}
  return structuredClone(s);
 }
 
 // Completion, not the calendar, moves the training cycle. Browsing/rest never does.
 export function advanceCycle(cycle:TrainingCycle,session:Session):TrainingCycle {
- if(!session.completedAt || session.dayId!==cycle.dayId || cycle.completedParts.includes(session.part))return cycle;
- const completedParts=[...cycle.completedParts,session.part];
+ if(!session.completedAt||session.dayId!==cycle.dayId)return cycle;
+ const covered:BodyPart[]=session.part==='full'?(['upper','lower'] as const).filter(p=>session.entries.some(e=>e.part===p&&e.sets.some(s=>s.done&&validSet(s)))):[session.part];
+ const completedParts=[...new Set([...cycle.completedParts,...covered])];
  return completedParts.length===2?{dayId:cycleDays[(cycleDays.indexOf(cycle.dayId as typeof cycleDays[number])+1)%cycleDays.length],completedParts:[]}:{...cycle,completedParts};
 }
 export function trainingCycle(state:State):TrainingCycle {
@@ -82,7 +103,7 @@ export function trainingCycle(state:State):TrainingCycle {
 }
 export function nextTraining(state:State) {
  const cycle=trainingCycle(state);
- const draft=state.sessions.find(s=>s.dayId===cycle.dayId&&!s.completedAt&&!cycle.completedParts.includes(s.part));
+ const draft=state.sessions.find(s=>s.dayId===cycle.dayId&&!s.completedAt&&(s.part==='full'||!cycle.completedParts.includes(s.part)));
  const part=draft?.part||(cycle.completedParts.includes('upper')?'lower':'upper');
  return {cycle,day:state.routine.find(d=>d.id===cycle.dayId)!,part,draft};
 }
@@ -92,3 +113,4 @@ export function finishTraining(state:State,id:string,at:string):State {
  const finished={...session,completedAt:at};
  return {...state,timerEnd:null,trainingCycle:advanceCycle(trainingCycle(state),finished),sessions:state.sessions.map(s=>s.id===id?finished:s)};
 }
+
